@@ -644,4 +644,4 @@
 
 # Вопросы-ответы
 
-![img](/home/pimiento/yap/questions.jpg)
+![img](https://www.parliament.nz/media/4552/question-mark-istock.jpg)
