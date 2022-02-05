@@ -554,16 +554,26 @@
   : False
 
 * Singleton
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 20_singleton.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+NAME: Singleton
+  #+BEGIN_SRC python :exports code
     class Logger:
         _instance = None
         def __init__(self):
-            raise RuntimeError("Call new() instead")
+            raise RuntimeError(
+                "Call new() instead"
+            )
         @classmethod
         def new(cls):
             if cls._instance is None:
-                cls._instance = cls.__new__(cls)
+                cls._instance = (
+                    cls.__new__(cls)
+                )
             return cls._instance
+  #+END_SRC
+
+* Singleton
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 20_singleton.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<Singleton>>
     l1 = Logger.new()
     l2 = Logger.new()
     print(l1.__class__.__name__)
@@ -573,13 +583,16 @@
   #+RESULTS:
   : Logger
   : True
+
 * Singleton
   #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 21_singleton.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     class Logger:
         _instance = None
         def __new__(cls):
             if cls._instance is None:
-                cls._instance = super().__new__(cls)
+                cls._instance = (
+                    super().__new__(cls)
+                )
             return cls._instance
     l1 = Logger()
     l2 = Logger()
@@ -593,4 +606,6 @@
 * Дополнительные материалы
   __[[https://python-patterns.guide/][Паттерны проектирования на Python]]__
   __[[https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124][Head First]]__
-* Вопросы
+* Вопросы-ответы
+  #+ATTR_LATEX: :width .6\textwidth
+  [[file:///home/pimiento/yap/questions.jpg]]
