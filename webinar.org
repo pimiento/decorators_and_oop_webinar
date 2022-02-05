@@ -365,31 +365,43 @@
 
 * staticmethod
   Не привязан ни к текущему объекту *self* ни к классу *cls*.
-  #+NAME: python_os
-  #+BEGIN_SRC python :exports none
+  #+NAME: executor
+  #+BEGIN_SRC python :exports code
     import os
-  #+END_SRC
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 16_staticmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
-    <<python_os>>
+
     class Executor:
         def __init__(self, command):
             self.command = command
         @staticmethod
         def chdir(path):
             os.chdir(path)
+        def __call__(self):
+            return (
+                os.popen(self.command)
+                .read().strip()
+            )
+  #+END_SRC
 
+* staticmethod
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 16_staticmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<executor>>
     orig_path = os.getcwd()
-    print(orig_path)
+    executor = Executor("ls|wc -l")
+    print(os.getcwd())
+    print(executor())
     Executor.chdir("/tmp/")
     print(os.getcwd())
-    Executor("test").chdir(orig_path)
+    print(executor())
+    executor.chdir(orig_path)
     print(os.getcwd())
   #+END_SRC
 
   #+RESULTS:
-  : /home/pimiento/yap
+  : /home/pimiento/yap/decorators_and_oop
+  : 26
   : /tmp
-  : /home/pimiento/yap
+  : 72
+  : /home/pimiento/yap/decorators_and_oop
 
 * Классы-декораторы
   #+BEGIN_SRC python :exports code :tangle 17_class_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
@@ -475,6 +487,55 @@
   : [10, 100]
   : []
 * Singleton
+  #+BEGIN_SRC python :exports both :results output
+    class Logger:
+        def __init__(self):
+            pass
+    l1 = Logger()
+    l2 = Logger()
+    print(l1 is l2)
+  #+END_SRC
+
+  #+RESULTS:
+  : False
+
+* Singleton
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 20_singleton.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    class Logger:
+        _instance = None
+        def __init__(self):
+            raise RuntimeError("Call new() instead")
+        @classmethod
+        def new(cls):
+            if cls._instance is None:
+                cls._instance = cls.__new__(cls)
+            return cls._instance
+    l1 = Logger.new()
+    l2 = Logger.new()
+    print(l1.__class__.__name__)
+    print(l1 is l2)
+  #+END_SRC
+
+  #+RESULTS:
+  : Logger
+  : True
+* Singleton
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 21_singleton.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    class Logger:
+        _instance = None
+        def __new__(cls):
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+            return cls._instance
+    l1 = Logger()
+    l2 = Logger()
+    print(l1.__class__.__name__)
+    print(l1 is l2)
+  #+END_SRC
+
+  #+RESULTS:
+  : Logger
+  : True
 * Дополнительные материалы
   __[[https://python-patterns.guide/][Паттерны проектирования на Python]]__
   __[[https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124][Head First]]__
