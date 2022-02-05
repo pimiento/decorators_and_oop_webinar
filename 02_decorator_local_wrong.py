@@ -12,3 +12,9 @@ def decorator(func):
         )
         return result
     return inner
+
+@decorator
+def mysum(x, y):
+    return x + y
+
+mysum(1, 2)
