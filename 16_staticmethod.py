@@ -10,13 +10,16 @@ class Executor:
     def chdir(path):
         os.chdir(path)
     def __call__(self):
-        os.system(self.command)
+        return (
+            os.popen(self.command)
+            .read().strip()
+        )
 orig_path = os.getcwd()
-print(orig_path)
 executor = Executor("ls|wc -l")
-Executor.chdir("/tmp/")
-print(executor())
 print(os.getcwd())
+print(executor())
+Executor.chdir("/tmp/")
+print(os.getcwd())
+print(executor())
 executor.chdir(orig_path)
 print(os.getcwd())
-print(executor())

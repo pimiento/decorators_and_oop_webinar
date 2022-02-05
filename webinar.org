@@ -407,9 +407,9 @@
   #+BEGIN_SRC python :exports code :tangle 17_class_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     class Decorator:
         def __cal__(self, fn):
-            def wrapper(*args, **kwargs):
+            def wrapper(*a, **kw):
                 print("BEFORE")
-                result = fn(*args, **kwargs)
+                result = fn(*a, **kw)
                 print("AFTER")
                 return result
             return wrapper
@@ -419,6 +419,60 @@
         return x + y
   #+END_SRC
 
+* Класссы-декораторы и замыкания
+  #+BEGIN_SRC python :exports none :tangle 17a_class_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    from functools import wraps
+
+
+    class Cache:
+        def __init__(self, n=3):
+            self._n = n
+            self.__cache = {}
+            self.__wrapper = None
+
+        def __call__(self, func):
+            @wraps(func)
+            def wrapper(*args):
+                if args in self.__cache and self.__cache[args]["count"] > self._n:
+                    print("Сброс по счётчику")
+                    del self.__cache[args]
+                elif args in self.__cache:
+                    self.__cache[args]["count"] += 1
+                    print("Значение из кеша")
+                    return self.__cache[args]["result"]
+                self.__cache[args] = {
+                    "result": func(*args),
+                    "count": 1
+                }
+                print("Записали в кеш")
+                return self.__cache[args]["result"]
+            self.__wrapper = wrapper
+            self.__wrapper.invalidate = self.invalidate
+            return self.__wrapper
+
+        def invalidate(self, *args):
+            if len(args) == 0:
+                print("Сбросить весь кеш")
+                self.__cache = {}
+            else:
+                print("Сбросить кеш для аргументов")
+                del self.__cache[args]
+                return self.__wrapper(*args)
+
+    @Cache(5)
+    def mysum(x, y):
+        return x + y
+
+    print(mysum(1, 2))
+    print(mysum(1, 2))
+    print(mysum.invalidate(1, 2))
+    print(mysum(1, 2))
+    print(mysum(1, 2))
+    print(mysum(1, 2))
+    print(mysum(1, 2))
+    print(mysum.invalidate())
+  #+END_SRC
+  __[[https://github.com/pimiento/decorators_and_oop_webinar/blob/master/17a_class_decorator.py][пример на GitHub]]__
 * Больше про декораторы
   __[[https://github.com/hchasestevens/hchasestevens.github.io/blob/master/notebooks/the-decorators-they-wont-tell-you-about.ipynb][TheDecoratorsTheyWontTellYouAbout]]__
 * магические методы классов в Python

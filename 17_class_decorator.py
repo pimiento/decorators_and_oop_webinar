@@ -3,9 +3,9 @@
 
 class Decorator:
     def __cal__(self, fn):
-        def wrapper(*args, **kwargs):
+        def wrapper(*a, **kw):
             print("BEFORE")
-            result = fn(*args, **kwargs)
+            result = fn(*a, **kw)
             print("AFTER")
             return result
         return wrapper
