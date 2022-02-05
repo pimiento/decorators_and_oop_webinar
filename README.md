@@ -1,43 +1,44 @@
 # &#1057;&#1086;&#1076;&#1077;&#1088;&#1078;&#1072;&#1085;&#1080;&#1077;
 
-1.  [Что такое декораторы](#orge226c4e)
-2.  [Что такое декораторы](#org8599036)
-3.  [Области видимости](#orga19491b)
-4.  [Области видимости](#org5c12cd4)
-5.  [nonlocal](#orgdfca4a6)
-6.  [global](#org98e94e6)
-7.  [Всё понятно, но вот конкретно…](#org6cad248)
-8.  [Не, всё понятно, но вот конкретно…](#org65b858d)
-9.  [Вроде всё понятно…](#org4bd9961)
-10. [И как это понимать?](#orgd46c837)
-11. [Замыкания](#org5b463bd)
-12. [Замыкания](#orgfaa08ce)
-13. [Замыкания](#org71ec6a7)
-14. [Замыкания](#org569d469)
-15. [Декораторы и имя функции](#org2223ff1)
-16. [wraps](#org6ded818)
-17. [Декораторы с аргументами](#org4f3f201)
-18. [Декораторы с аргументами](#org2c7c4a5)
-19. [Декораторы с аргументами](#orga858f66)
-20. [classmethod](#org4f45e3c)
-21. [staticmethod](#org1f9899d)
-22. [staticmethod](#org5723d01)
-23. [Классы-декораторы](#org1b81120)
-24. [Класссы-декораторы и замыкания](#orgf5328da)
-25. [Больше про декораторы](#orgf0a47f3)
-26. [магические методы классов в Python](#org357ff93)
-27. [property](#orgb06c8da)
-28. [getter/setter/deleter](#org75af011)
-29. [getter/setter/deleter](#org5272ce2)
-30. [Singleton](#orge7138da)
-31. [Singleton](#orga7ccb89)
-32. [Singleton](#orgdc3be1e)
-33. [Дополнительные материалы](#org61358b4)
-34. [Вопросы](#org9afa093)
+1.  [Что такое декораторы](#org79e7c85)
+2.  [Что такое декораторы](#org5f0ac46)
+3.  [Области видимости](#org2b92ec8)
+4.  [Области видимости](#org28b57b2)
+5.  [nonlocal](#orgb2273d2)
+6.  [global](#orgd50fc74)
+7.  [Всё понятно, но вот конкретно…](#orgcbad196)
+8.  [Не, всё понятно, но вот конкретно…](#org8a96ffd)
+9.  [Вроде всё понятно…](#org79f4b0c)
+10. [И как это понимать?](#orgb4a61c0)
+11. [Замыкания](#org83a63b7)
+12. [Замыкания](#orga8b7e91)
+13. [Замыкания](#orga0c4f7d)
+14. [Замыкания](#org91caa59)
+15. [Декораторы и имя функции](#org4c23fef)
+16. [wraps](#org3ade7a0)
+17. [Декораторы с аргументами](#orgb3e0e03)
+18. [Декораторы с аргументами](#org8169056)
+19. [Декораторы с аргументами](#org95cd7aa)
+20. [classmethod](#org3d7e762)
+21. [staticmethod](#org4df6fc8)
+22. [staticmethod](#orgbba65ca)
+23. [Классы-декораторы](#orgabe3ee4)
+24. [Класссы-декораторы и замыкания](#org39c9873)
+25. [Больше про декораторы](#org08064ff)
+26. [магические методы классов в Python](#org8bfd48f)
+27. [property](#org5c4d1cb)
+28. [getter/setter/deleter](#org9a25abd)
+29. [getter/setter/deleter](#org81c8844)
+30. [Singleton](#orgb53238e)
+31. [Singleton](#org75ab66c)
+32. [Singleton](#orgc5a8803)
+33. [Singleton](#orgcab8e04)
+34. [Дополнительные материалы](#orgd1fd5ff)
+35. [Вопросы-ответы](#orgbffe528)
 
 
 
-<a id="orge226c4e"></a>
+<a id="org79e7c85"></a>
 
 # Что такое декораторы
 
@@ -56,7 +57,7 @@
         return inner
 
 
-<a id="org8599036"></a>
+<a id="org5f0ac46"></a>
 
 # Что такое декораторы
 
@@ -73,7 +74,7 @@
     функция mysum успешно выполнена
 
 
-<a id="orga19491b"></a>
+<a id="org2b92ec8"></a>
 
 # Области видимости
 
@@ -90,7 +91,7 @@
         return inner
 
 
-<a id="org5c12cd4"></a>
+<a id="org28b57b2"></a>
 
 # Области видимости
 
@@ -107,7 +108,7 @@
         return inner
 
 
-<a id="orgdfca4a6"></a>
+<a id="orgb2273d2"></a>
 
 # nonlocal
 
@@ -125,7 +126,7 @@
         return inner
 
 
-<a id="org98e94e6"></a>
+<a id="orgd50fc74"></a>
 
 # global
 
@@ -143,7 +144,7 @@
         return inner
 
 
-<a id="org6cad248"></a>
+<a id="orgcbad196"></a>
 
 # Всё понятно, но вот конкретно…
 
@@ -167,7 +168,7 @@
     3
 
 
-<a id="org65b858d"></a>
+<a id="org8a96ffd"></a>
 
 # Не, всё понятно, но вот конкретно…
 
@@ -190,7 +191,7 @@
     3
 
 
-<a id="org4bd9961"></a>
+<a id="org79f4b0c"></a>
 
 # Вроде всё понятно…
 
@@ -206,7 +207,7 @@
     f()
 
 
-<a id="orgd46c837"></a>
+<a id="orgb4a61c0"></a>
 
 # И как это понимать?
 
@@ -224,7 +225,7 @@
     0 1
 
 
-<a id="org5b463bd"></a>
+<a id="org83a63b7"></a>
 
 # Замыкания
 
@@ -244,7 +245,7 @@
         return x + y
 
 
-<a id="orgfaa08ce"></a>
+<a id="orga8b7e91"></a>
 
 # Замыкания
 
@@ -262,7 +263,7 @@
     Результат из кеша
 
 
-<a id="org71ec6a7"></a>
+<a id="orga0c4f7d"></a>
 
 # Замыкания
 
@@ -287,7 +288,7 @@
         return x + y
 
 
-<a id="org569d469"></a>
+<a id="org91caa59"></a>
 
 # Замыкания
 
@@ -308,7 +309,7 @@
     Положить в кеш
 
 
-<a id="org2223ff1"></a>
+<a id="org4c23fef"></a>
 
 # Декораторы и имя функции
 
@@ -329,7 +330,7 @@
     None
 
 
-<a id="org6ded818"></a>
+<a id="org3ade7a0"></a>
 
 # wraps
 
@@ -350,7 +351,7 @@
     This is mysum function
 
 
-<a id="org4f3f201"></a>
+<a id="orgb3e0e03"></a>
 
 # Декораторы с аргументами
 
@@ -371,7 +372,7 @@
         return decorator
 
 
-<a id="org2c7c4a5"></a>
+<a id="org8169056"></a>
 
 # Декораторы с аргументами
 
@@ -383,10 +384,10 @@
 
     countdown(int(5e7))
 
-    AVG: 2.4195
+    AVG: 2.3782
 
 
-<a id="orga858f66"></a>
+<a id="org95cd7aa"></a>
 
 # Декораторы с аргументами
 
@@ -399,10 +400,10 @@
         benchmark(5)(countdown)
     countdown_decorated(int(5e7))
 
-    AVG: 2.3785
+    AVG: 2.3841
 
 
-<a id="org4f45e3c"></a>
+<a id="org3d7e762"></a>
 
 # classmethod
 
@@ -420,7 +421,7 @@
     {'a': 1, 'b': 2}
 
 
-<a id="org1f9899d"></a>
+<a id="org4df6fc8"></a>
 
 # staticmethod
 
@@ -441,7 +442,7 @@
             )
 
 
-<a id="org5723d01"></a>
+<a id="orgbba65ca"></a>
 
 # staticmethod
 
@@ -457,13 +458,13 @@
     print(os.getcwd())
 
     /home/pimiento/yap/decorators_and_oop
-    24
+    28
     /tmp
     72
     /home/pimiento/yap/decorators_and_oop
 
 
-<a id="org1b81120"></a>
+<a id="orgabe3ee4"></a>
 
 # Классы-декораторы
 
@@ -481,28 +482,28 @@
         return x + y
 
 
-<a id="orgf5328da"></a>
+<a id="org39c9873"></a>
 
 # Класссы-декораторы и замыкания
 
 <span class="underline"><span class="underline">[пример на GitHub](https://github.com/pimiento/decorators_and_oop_webinar/blob/master/17a_class_decorator.py)</span></span>
 
 
-<a id="orgf0a47f3"></a>
+<a id="org08064ff"></a>
 
 # Больше про декораторы
 
 <span class="underline"><span class="underline">[TheDecoratorsTheyWontTellYouAbout](https://github.com/hchasestevens/hchasestevens.github.io/blob/master/notebooks/the-decorators-they-wont-tell-you-about.ipynb)</span></span>
 
 
-<a id="org357ff93"></a>
+<a id="org8bfd48f"></a>
 
 # магические методы классов в Python
 
 <span class="underline"><span class="underline">[magicmethods](https://rszalski.github.io/magicmethods/)</span></span>
 
 
-<a id="orgb06c8da"></a>
+<a id="org5c4d1cb"></a>
 
 # property
 
@@ -524,7 +525,7 @@
     can't set attribute
 
 
-<a id="org75af011"></a>
+<a id="org9a25abd"></a>
 
 # getter/setter/deleter
 
@@ -543,7 +544,7 @@
             self.__x = []
 
 
-<a id="org5272ce2"></a>
+<a id="org81c8844"></a>
 
 # getter/setter/deleter
 
@@ -563,7 +564,7 @@
     []
 
 
-<a id="orge7138da"></a>
+<a id="orgb53238e"></a>
 
 # Singleton
 
@@ -577,19 +578,30 @@
     False
 
 
-<a id="orga7ccb89"></a>
+<a id="org75ab66c"></a>
 
 # Singleton
 
     class Logger:
         _instance = None
         def __init__(self):
-            raise RuntimeError("Call new() instead")
+            raise RuntimeError(
+                "Call new() instead"
+            )
         @classmethod
         def new(cls):
             if cls._instance is None:
-                cls._instance = cls.__new__(cls)
+                cls._instance = (
+                    cls.__new__(cls)
+                )
             return cls._instance
+
+
+<a id="orgc5a8803"></a>
+
+# Singleton
+
+
     l1 = Logger.new()
     l2 = Logger.new()
     print(l1.__class__.__name__)
@@ -599,7 +611,7 @@
     True
 
 
-<a id="orgdc3be1e"></a>
+<a id="orgcab8e04"></a>
 
 # Singleton
 
@@ -607,7 +619,9 @@
         _instance = None
         def __new__(cls):
             if cls._instance is None:
-                cls._instance = super().__new__(cls)
+                cls._instance = (
+                    super().__new__(cls)
+                )
             return cls._instance
     l1 = Logger()
     l2 = Logger()
@@ -618,7 +632,7 @@
     True
 
 
-<a id="org61358b4"></a>
+<a id="orgd1fd5ff"></a>
 
 # Дополнительные материалы
 
@@ -626,6 +640,8 @@
 <span class="underline"><span class="underline">[Head First](https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124)</span></span>
 
 
-<a id="org9afa093"></a>
+<a id="orgbffe528"></a>
 
-# Вопросы
+# Вопросы-ответы
+
+![img](/home/pimiento/yap/questions.jpg)
