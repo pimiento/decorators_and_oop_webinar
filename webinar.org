@@ -1,0 +1,401 @@
+#+TITLE: Декораторы. ООП и магические методы в Python
+#+EMAIL: @pvavilin
+#+AUTHOR: @pvavilin
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [smallest]
+#+LATEX_HEADER: \usetheme{default}
+#+LATEX_HEADER: \usecolortheme{crane}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\scriptsize}
+#+LaTeX_HEADER: \lstset{basicstyle=\scriptsize\ttfamily}
+#+OPTIONS: \n:t ^:nil
+* Что такое декораторы
+  #+NAME: decorator
+  #+BEGIN_SRC python :exports code
+    def decorator(func):
+        def inner(*args, **kwargs):
+            print(
+                "Сейчас будет выполнена "
+                f"функция: {func.__name__}"
+            )
+            result = func(*args, **kwargs)
+            print(
+                f"функция {func.__name__} "
+                "успешно выполнена"
+            )
+            return result
+        return inner
+  #+END_SRC
+* Что такое декораторы
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 01_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<decorator>>
+    def mysum(x, y):
+        print(f"x + y = {x+y}")
+        return x + y
+
+    sum_decorated = decorator(mysum)
+    sum_decorated(6, 7)
+  #+END_SRC
+
+  #+RESULTS:
+  : Сейчас будет выполнена функция: sum
+  : x + y = 13
+  : функция <function sum at 0x7ff251674940> успешно выполнена
+* Области видимости
+  #+BEGIN_SRC python :exports code :tangle 02_decorator_local_wrong.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    def decorator(func):
+        counter = 0
+        def inner(*args, **kwargs):
+            counter += 1
+            result = func(*args, **kwargs)
+            print(
+                "Функция выполнена "
+                f"{counter} раз"
+            )
+            return result
+        return inner
+  #+END_SRC
+* Области видимости
+  #+BEGIN_SRC python :exports code :tangle 03_decorator_global_wrong.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    counter = 0
+    def decorator(func):
+        def inner(*args, **kwargs):
+            counter += 1
+            result = func(*args, **kwargs)
+            print(
+                "Функция выполнена "
+                f"{counter} раз"
+            )
+            return result
+        return inner
+  #+END_SRC
+* nonlocal
+  #+BEGIN_SRC python :exports code :tangle 04_decorator_nonlocal.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    def decorator(func):
+        counter = 0
+        def inner(*args, **kwargs):
+            nonlocal counter
+            counter += 1
+            result = func(*args, **kwargs)
+            print(
+                "Функция выполнена "
+                f"{counter} раз"
+            )
+            return result
+        return inner
+  #+END_SRC
+* global
+  #+BEGIN_SRC python :exports code :tangle 05_decorator_global.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    counter = 0
+    def decorator(func):
+        def inner(*args, **kwargs):
+            global counter
+            counter += 1
+            result = func(*args, **kwargs)
+            print(
+                "Функция выполнена "
+                f"{counter} раз"
+            )
+            return result
+        return inner
+  #+END_SRC
+* Всё понятно, но вот конкретно…
+  #+NAME:mysum
+  #+BEGIN_SRC python :exports none
+    def mysum(x, y):
+        """This is mysum function"""
+        return x + y
+  #+END_SRC
+  #+BEGIN_SRC python :exports both :noweb strip-export :results output :tangle 06_decorator_global_dict.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<mysum>>
+    counter = {}
+    def decorator(func):
+        counter[func.__name__] = 0
+        def inner(*args, **kwargs):
+            counter[func.__name__] += 1
+            result = func(*args, **kwargs)
+            print(counter[func.__name__])
+            return result
+        return inner
+    mysum_decorated = decorator(mysum)
+    mysum_decorated(2, 2)
+    mysum_decorated(2, 2)
+    mysum_decorated(3, 1)
+  #+END_SRC
+
+  #+RESULTS:
+  : 1
+  : 2
+  : 3
+* Не, всё понятно, но вот конкретно…
+    #+BEGIN_SRC python :exports both :noweb strip-export :results output :tangle 07_decorator_local_list.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+      <<mysum>>
+      def decorator(func):
+          counter = [0]
+          def inner(*args, **kwargs):
+              counter[0] += 1
+              result = func(*args, **kwargs)
+              print(counter[0])
+              return result
+          return inner
+      mysum_decorated = decorator(mysum)
+      mysum_decorated(2, 2)
+      mysum_decorated(2, 2)
+      mysum_decorated(3, 1)
+  #+END_SRC
+
+  #+RESULTS:
+  : 1
+  : 2
+  : 3
+* Вроде всё понятно…
+  #+BEGIN_SRC python :exports code :tangle 08_wtf.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    x = 0
+    y = 0
+    def f():
+        x = 1
+        y = 1
+        class C:
+            # что будет напечатано?
+            print(x, y)
+            x = 2
+    f()
+  #+END_SRC
+* И как это понимать?
+  #+BEGIN_SRC python :exports both :results output
+    x = 0
+    y = 0
+    def f():
+        x = 1
+        y = 1
+        class C:
+            # что будет напечатано?
+            print(x, y)
+            x = 2
+    f()
+  #+END_SRC
+
+  #+RESULTS:
+  : 0 1
+* Декораторы и имя функции
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 09_decorator_lost_name.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<decorator>>
+    def mysum(x,y):
+        """MYSUM"""
+        return x+y
+
+    mysum_decorated = decorator(mysum)
+    print(mysum.__name__)
+    print(mysum.__doc__)
+    print(mysum_decorated.__name__)
+    print(mysum_decorated.__doc__)
+  #+END_SRC
+
+  #+RESULTS:
+  : mysum
+  : MYSUM
+  : inner
+  : None
+* wraps
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 10_wraps.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    from functools import wraps
+    <<mysum>>
+    def decorator(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            """INNER"""
+            return func(*args, **kwargs)
+        return inner
+
+    mysum_decorated = decorator(mysum)
+    print(mysum_decorated.__name__)
+    print(mysum_decorated.__doc__)
+  #+END_SRC
+
+  #+RESULTS:
+  : mysum
+  : This is mysum function
+* Декораторы с аргументами
+  #+NAME: time
+  #+BEGIN_SRC python :exports none
+    import time
+  #+END_SRC
+  #+NAME: benchmark
+  #+BEGIN_SRC python :exports code :noweb strip-export
+    <<time>>
+    def benchmark(iters=3):
+        def decorator(func):
+            def wrapper(*a, **k):
+                total = 0
+                for i in range(iters):
+                    start = time.time()
+                    result = func(*a, **k)
+                    end = time.time()
+                    total += (end - start)
+                print("AVG: "
+                    f"{total/iters:.4f}")
+                return result
+            return wrapper
+        return decorator
+  #+END_SRC
+* Декораторы с аргументами
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export  :tangle 11_decorator_with_arguments.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<benchmark>>
+    @benchmark()
+    def countdown(n):
+        while n > 0:
+            n -= 1
+
+    countdown(int(5e7))
+  #+END_SRC
+
+  #+RESULTS:
+  : AVG: 2.3937626679738364
+* Декораторы с аргументами
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 12_decorator_with_arguments.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<benchmark>>
+    def countdown(n):
+        while n > 0:
+            n -= 1
+
+    countdown_decorated = \
+        benchmark(5)(countdown)
+    countdown_decorated(int(5e7))
+  #+END_SRC
+
+  #+RESULTS:
+  : AVG: 2.431885766983032
+* classmethod
+  Принимает в качестве первого аргумента сам класс *cls* а не объект *self*.
+  #+BEGIN_SRC python :exports both :results output :tangle 13_classmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    class MyDict:
+        def __init__(self, d):
+            self.data = d
+        @classmethod
+        def from_pairs(cls, pairs):
+            return cls(dict(pairs))
+    pairs = (("a", 1), ("b", 2))
+    print(MyDict.from_pairs(pairs).data)
+  #+END_SRC
+
+  #+RESULTS:
+  : {'a': 1, 'b': 2}
+
+* staticmethod
+  Не привязан ни к текущему объекту *self* ни к классу *cls*.
+  #+NAME: python_os
+  #+BEGIN_SRC python :exports none
+    import os
+  #+END_SRC
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 14_staticmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<python_os>>
+    class Executor:
+        def __init__(self, command):
+            self.command = command
+        @staticmethod
+        def chdir(path):
+            os.chdir(path)
+
+    orig_path = os.getcwd()
+    print(orig_path)
+    Executor.chdir("/tmp/")
+    print(os.getcwd())
+    Executor("test").chdir(orig_path)
+    print(os.getcwd())
+  #+END_SRC
+
+  #+RESULTS:
+  : /home/pimiento/yap
+  : /tmp
+  : /home/pimiento/yap
+
+* Классы-декораторы
+  #+BEGIN_SRC python :exports code :tangle 15_class_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    class Decorator:
+        def __cal__(self, fn):
+            def wrapper(*args, **kwargs):
+                print("BEFORE")
+                result = fn(*args, **kwargs)
+                print("AFTER")
+                return result
+            return wrapper
+
+    @Decorator
+    def mysum(x, y):
+        return x + y
+  #+END_SRC
+
+* Больше про декораторы
+  __[[https://github.com/hchasestevens/hchasestevens.github.io/blob/master/notebooks/the-decorators-they-wont-tell-you-about.ipynb][TheDecoratorsTheyWontTellYouAbout]]__
+* магические методы классов в Python
+  __[[https://rszalski.github.io/magicmethods/][magicmethods]]__
+* property
+  #+NAME: dataclass
+  #+BEGIN_SRC python :exports none
+    from dataclasses import dataclass
+  #+END_SRC
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 16_property.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<dataclass>>
+    @dataclass
+    class A:
+        __x: int
+        @property
+        def x(self):
+            return self.__x
+    a = A(10)
+    print(a.x)
+    try:
+        a.x = 100
+    except Exception as e:
+        print(e)
+  #+END_SRC
+
+  #+RESULTS:
+  : 10
+  : can't set attribute
+* getter/setter/deleter
+  #+NAME: class_A
+  #+BEGIN_SRC python :exports code :noweb strip-export
+    <<dataclass>>
+    @dataclass
+    class A:
+        __x: list
+        @property
+        def x(self):
+            return self.__x[::]
+        @x.setter
+        def x(self, value):
+            self.__x.append(value)
+        @x.deleter
+        def x(self):
+            self.__x = []
+  #+END_SRC
+
+  #+RESULTS: class_A
+  : None
+
+* getter/setter/deleter
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 17_property.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+    <<class_A>>
+    a = A([])
+    print(a.x)
+    a.x = 10
+    print(a.x)
+    a.x = 100
+    print(a.x)
+    del a.x
+    print(a.x)
+  #+END_SRC
+
+  #+RESULTS:
+  : []
+  : [10]
+  : [10, 100]
+  : []
+* Singleton
+* Дополнительные материалы
+  __[[https://python-patterns.guide/][Паттерны проектирования на Python]]__
+  __[[https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124][Head First]]__
+* Вопросы
