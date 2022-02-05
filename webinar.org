@@ -179,8 +179,88 @@
 
   #+RESULTS:
   : 0 1
+* Замыкания
+  #+NAME: cached
+  #+BEGIN_SRC python :exports code
+    def cached(func):
+        cache = {}
+        def wrapper(*args):
+            if args not in cache:
+                print("Положить в кеш")
+                cache[args] = func(*args)
+            else:
+                print("Результат из кеша")
+            return cache[args]
+        return wrapper
+
+    @cached
+    def mysum(x, y):
+        return x + y
+
+  #+END_SRC
+* Замыкания
+  #+BEGIN_SRC python :exports both :results output :tangle 09_cache_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3" :noweb strip-export
+    <<cached>>
+    mysum(1, 2)
+    mysum(1, 2)
+    mysum(2, 3)
+    mysum(2, 3)
+    mysum(1, 2)
+  #+END_SRC
+
+  #+RESULTS:
+  : Положить в кеш
+  : Результат из кеша
+  : Положить в кеш
+  : Результат из кеша
+  : Результат из кеша
+
+* Замыкания
+  #+NAME: better_cached
+  #+BEGIN_SRC python :exports code
+    def cached(func):
+        cache = {}
+        def wrapper(*args):
+            if args not in cache:
+                print("Положить в кеш")
+                cache[args] = func(*args)
+            else:
+                print("Результат из кеша")
+            return cache[args]
+        def invalidate(*args):
+            print("Сбросить кеш")
+            del cache[args]
+            return wrapper(*args)
+        wrapper.invalidate = invalidate
+        return wrapper
+
+    @cached
+    def mysum(x, y):
+        return x + y
+  #+END_SRC
+
+* Замыкания
+  #+BEGIN_SRC python :exports both :results output :tangle 10_cache_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3" :noweb strip-export
+    <<better_cached>>
+    mysum(1, 2)
+    mysum(1, 2)
+    mysum(2, 3)
+    mysum(2, 3)
+    mysum(1, 2)
+    mysum.invalidate(2, 3)
+  #+END_SRC
+
+  #+RESULTS:
+  : Положить в кеш
+  : Результат из кеша
+  : Положить в кеш
+  : Результат из кеша
+  : Результат из кеша
+  : Сбросить кеш
+  : Положить в кеш
+
 * Декораторы и имя функции
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 09_decorator_lost_name.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 11_decorator_lost_name.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     <<decorator>>
     def mysum(x,y):
         """MYSUM"""
@@ -199,7 +279,7 @@
   : inner
   : None
 * wraps
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 10_wraps.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 12_wraps.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     from functools import wraps
     <<mysum>>
     def decorator(func):
@@ -241,7 +321,7 @@
         return decorator
   #+END_SRC
 * Декораторы с аргументами
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export  :tangle 11_decorator_with_arguments.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export  :tangle 13_decorator_with_arguments.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     <<benchmark>>
     @benchmark()
     def countdown(n):
@@ -254,7 +334,7 @@
   #+RESULTS:
   : AVG: 2.3937626679738364
 * Декораторы с аргументами
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 12_decorator_with_arguments.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 14_decorator_with_arguments.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     <<benchmark>>
     def countdown(n):
         while n > 0:
@@ -269,7 +349,7 @@
   : AVG: 2.431885766983032
 * classmethod
   Принимает в качестве первого аргумента сам класс *cls* а не объект *self*.
-  #+BEGIN_SRC python :exports both :results output :tangle 13_classmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :tangle 15_classmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     class MyDict:
         def __init__(self, d):
             self.data = d
@@ -289,7 +369,7 @@
   #+BEGIN_SRC python :exports none
     import os
   #+END_SRC
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 14_staticmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 16_staticmethod.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     <<python_os>>
     class Executor:
         def __init__(self, command):
@@ -312,7 +392,7 @@
   : /home/pimiento/yap
 
 * Классы-декораторы
-  #+BEGIN_SRC python :exports code :tangle 15_class_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports code :tangle 17_class_decorator.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     class Decorator:
         def __cal__(self, fn):
             def wrapper(*args, **kwargs):
@@ -336,7 +416,7 @@
   #+BEGIN_SRC python :exports none
     from dataclasses import dataclass
   #+END_SRC
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 16_property.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 18_property.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     <<dataclass>>
     @dataclass
     class A:
@@ -377,7 +457,7 @@
   : None
 
 * getter/setter/deleter
-  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 17_property.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
+  #+BEGIN_SRC python :exports both :results output :noweb strip-export :tangle 19_property.py :comments org :mkdirp yes :shebang "#!/usr/bin/env python3"
     <<class_A>>
     a = A([])
     print(a.x)
